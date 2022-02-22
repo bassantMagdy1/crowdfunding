@@ -1,0 +1,210 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{%endblock%}
+{% block content %}
+<main class="projects">
+    <section class="hero-section text-center">
+        <div class="container container--narrow">
+            <div class="hero-section__box">
+                <h2>Search for <span>Projects</span></h2>
+            </div>
+            <div class="hero-section__search">
+                <form id="searchForm" class="form" action="{% url 'all-projects' %}" method="get">
+                    <div class="form__field">
+                        <label for="formInput#search">Search By Project </label>
+                        <input class="input input--text" id="formInput#search" type="text" name="search_query"
+                               value="{{search_query}}" placeholder="Search by Project Title"/>
+                    </div>
+                    <input class="btn btn--sub btn--lg" type="submit" value="Search"/>
+                </form>
+            </div>
+        </div>
+    </section>
+    <br>
+
+    <!--    ###############################  top featured projects  #############################-->
+    <br>
+    <div class="container-slider" style="width:80%; margin:auto">
+        <h2 style="text-align:center; border-bottom: 1px solid #5B5D70; padding: 5px;">Top Featured Projects</h2>
+        <br>
+        <!-- Full-width images with number text -->
+        {% for project in featured %}
+        <div class="mySlides-slider">
+            <div class="container-slider">
+                <div class="numbertext-slider">
+                    <a href="{% url 'view-project' project.id %}" class="project btn btn--sub btn--lg">
+                        {{project.title}}
+                    </a>
+                </div>
+                <a href="{% url 'view-project' project.id %}">
+                    <img src="{{project.main_photo.url}}" style="width:100%" class="">
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- Next and previous buttons -->
+        <a class="prev-slider" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next-slider" onclick="plusSlides(1)">&#10095;</a>
+        <!-- Image text -->
+        <div class="caption-container-slider">
+            <p id="caption"></p>
+        </div>
+        <!-- Thumbnail images -->
+        <div class="row-slider">
+            {% for project in featured %}
+            <div class="column-slider">
+                <img class="demo cursor" src="{{project.main_photo.url}}" style="width:100%" onclick="currentSlide(1)"
+                     alt="{{project.title}}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!--    #########################    Slider Height five #################-->
+
+    <section class="projectsList">
+        <div class="container">
+            <h2 style="text-align:center; border-bottom: 1px solid #5B5D70; padding: 5px;">Top Rated Projects</h2>
+            <div class="grid grid--three">
+                {% for project in top %}
+                <div class="column">
+                    <div class="card project">
+                        <a href="{% url 'view-project' project.id %}" class="project">
+                            <img class="project__thumbnail" src="{{project.main_photo.url}}"
+                                 alt="project thumbnail"/>
+                            <div class="card__body">
+                                <h3 class="project__title">Name: {{project.title}}</h3>
+
+                                <p class="project--rating">
+                                    <span style="font-weight: bold;">Positive
+                                    Feedback:</span> {{project.total_upvotes}}
+                                </p>
+                                <div class="project__tags">
+                                    {%for tag in project.tags.all %}
+                                    <span class="tag tag--pill tag--main">
+                                        <small>{{tag}}</small>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!--    ###################################### Latest Five #######################-->
+
+    <section class="projectsList">
+        <div class="container">
+            <h2 style="text-align:center; border-bottom: 1px solid #5B5D70; padding: 5px;">Latest Projects</h2>
+            <div class="grid grid--three">
+                {% for project in latest %}
+                <div class="column">
+                    <div class="card project">
+                        <a href="{% url 'view-project' project.id %}" class="project">
+                            <img class="project__thumbnail" src="{{project.main_photo.url}}"
+                                 alt="project thumbnail"/>
+                            <div class="card__body">
+                                <h3 class="project__title">Name: {{project.title}}</h3>
+
+                                <p class="project--rating">
+                                    <span style="font-weight: bold;">Positive
+                                    Feedback:</span> {{project.total_upvotes}}
+                                </p>
+                                <div class="project__tags">
+                                    {%for tag in project.tags.all %}
+                                    <span class="tag tag--pill tag--main">
+                                        <small>{{tag}}</small>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <section class="projectsList">
+        <div class="container">
+            <h2 style="text-align:center; border-bottom: 1px solid #5B5D70; padding: 5px;">All Projects</h2>
+            <div class="grid grid--three">
+                {% for project in projects %}
+                <div class="column">
+                    <div class="card project">
+                        <a href="{% url 'view-project' project.id %}" class="project">
+                            <img class="project__thumbnail" src="{{project.main_photo.url}}"
+                                 alt="project thumbnail"/>
+                            <div class="card__body">
+                                <h3 class="project__title">Name: {{project.title}}</h3>
+
+                                <p class="project--rating">
+                                    <span style="font-weight: bold;">Positive
+                                    Feedback:</span> {{project.total_upvotes}}
+                                </p>
+                                <div class="project__tags">
+                                    {%for tag in project.tags.all %}
+                                    <span class="tag tag--pill tag--main">
+                                        <small>{{tag}}</small>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
+</main>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides-slider");
+  var dots = document.getElementsByClassName("demo-slider");
+  var captionText = document.getElementById("caption");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active-slider", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " active-slider";
+  captionText.innerHTML = dots[slideIndex-1].alt;
+}
+
+
+
+
+
+
+
+</script>
+{% endblock scripts %}

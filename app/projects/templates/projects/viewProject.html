@@ -1,0 +1,239 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{%endblock%}
+
+{% block content %}
+
+<!-- Main Section -->
+<main class="singleProject my-md">
+    <div class="container">
+        <div class="layout">
+            <div class="column column--1of3">
+                <div>
+                    <!-- # AA_UPDATE: I added 'method=post' and '{% csrf_token %}' -->
+                    <!--Upvote form -->
+
+                    <h3 class="singleProject__subtitle">Funding</h3>
+                    {% if rem_sum_required == 0 %}
+                    <p class="singleProject__subtitle"> Target achieved. You cannot donate anymore for this project</p>
+                    {% else %}
+                    <!-- # AA_UPDATE: -->
+                    <p class="singleProject__subtitle"> Your Last Donation: {{request.session.last_donate}}</p>
+                    <form action="{% url 'donate' PROJECT.project_obj.id %}" method="post">
+                        {% csrf_token %}
+                        <p style="font-size: 18pt"> Target : {{PROJECT.project_obj.total_target}} </p>
+                        <p style="font-size: 18pt"> Collected : {{PROJECT.project_obj.collected_donations}} </p>
+                        <p style="font-size: 18pt"> Remaining : {{rem_sum_required}} </p>
+
+                        <label class="singleProject__subtitle" for="donation-box">Donate </label>
+                        <input class="input" type="number" name="user_donation" value="" min="1" max="{{rem_sum_required}}"/>
+                        <br>
+                        <br>
+                        <input class="btn btn--main" type="submit" value="Send" onclick="return confirm('Are you sure?')">
+                    </form>
+
+                    {% endif %}
+                </div>
+                <br>
+                <hr>
+                <h3 class="singleProject__subtitle">Tags</h3>
+                <div class="singleProject__toolStack">
+                    {% for tag in PROJECT.project_obj.tags.all %}
+                    <span class="tag tag--pill tag tag--lg">
+                        <small>{{tag}}</small>
+                    </span>
+                    {% endfor %}
+                    <hr>
+                    <h3 class="singleProject__subtitle">Category</h3>
+                    <span class="tag tag--pill tag--sub tag--lg">
+                        <small>{{PROJECT.project_obj.category}}</small>
+                    </span>
+                </div>
+
+                <hr>
+                <h3 class="singleProject__subtitle">Vote</h3>
+                {% if user_upvoted_proj %}
+                <form class="form" action="{% url 'update_rating' PROJECT.project_obj.id %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="submit" name='action_type' value="Vote Up" class="btn btn--sub btn--lg  my-md"/>
+                </form>
+                {% else %}
+                <form class="form" action="{% url 'update_rating' PROJECT.project_obj.id %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="submit" name='action_type' value="Vote Up" class="btn btn--sub--outline   my-md"/>
+                </form>
+                {% endif %}
+                {% if user_downvoted_proj %}
+                <form class="form" action="{% url 'update_rating' PROJECT.project_obj.id %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="submit" name='action_type' value="Vote down" class="btn btn--sub btn--lg  my-md"/>
+                </form>
+                {% else %}
+                <form class="form" action="{% url 'update_rating' PROJECT.project_obj.id %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="submit" name='action_type' value="Vote down" class="btn btn--sub--outline  my-md"/>
+                </form>
+                {% endif %}
+
+                <div>
+                    <h5 class="project--rating">
+                        {{PROJECT.project_obj.total_upvotes}} Likes This Project Of Total
+                        ({{PROJECT.project_obj.total_votes}})
+                    </h5>
+                </div>
+                <br>
+                <hr>
+                <div>
+                    <input type="button" id="report-btn" value="Report Project" class="btn btn--sub btn--lg  my-md"/>
+                    <div style="display: none" id="report_container">
+                        <form class="form" method="POST" enctype="multipart/form-data"
+                              action="{%url 'report-project' PROJECT.project_obj.id %}">
+                            {% csrf_token %}
+                            {% for field in PROJECT.project_report_form %}
+                            <div class="form__field">
+                                <label for="{{field.lable}}">Choose Report Type</label>
+                                {{field}}
+                            </div>
+                            {% endfor %}
+                            <input class="btn btn--sub btn--lg  my-md" type="submit" value="Send Report"/>
+                        </form>
+                    </div>
+                </div>
+
+
+                {% if project.source_link %}
+                <a class="singleProject__liveLink" href="{{project.source_link}}" target="_blank"><i
+                        class="im im-external-link"></i>Source
+                    Code
+                </a>
+                {% endif %}
+
+                {% if project.demo_link %}
+                <br>
+                <a class="singleProject__liveLink" href="{{project.demo_link}}" target="_blank"><i
+                        class="im im-external-link"></i>Live Demo
+                </a>
+                {% endif %}
+            </div>
+            <div class="column column--2of3">
+                <img class="singleProject__preview" src="{% static PROJECT.project_obj.main_photo.url %}"
+                     alt="portfolio thumbnail"/>
+                <h2 class="singleProject__title" style="text-align:center">Name: {{PROJECT.project_obj.title}}</h2>
+                <h3 class="singleProject__subtitle">About the Project</h3>
+                <h4>Details</h4>
+                <div class="singleProject__info">
+                    {{PROJECT.project_obj.details}}
+                </div>
+                <br>
+                <hr>
+                 <!--                ############# SLIDER ##############-->
+                <!-- ############################################################################################################################-->
+                {% if PROJECT.prject_img %}
+                <h2 style="text-align:center">Slider Images</h2>
+                <br>
+                {% endif %}
+                <!--                #################################################################################-->
+                <div class="container-slider">
+                    {% for img in PROJECT.prject_img %}
+                    <!-- Full-width images with number text -->
+                    <div class="mySlides-slider">
+                        <img src="{% static img.image.url %}" alt="Slider" style="width:100%">
+                    </div>
+                    {% endfor %}
+                    <!-- Next and previous buttons -->
+                    <a class="prev-slider" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next-slider" onclick="plusSlides(1)">&#10095;</a>
+                </div>
+                <!-- ############################################################################################################################-->
+                <br>
+                <hr>
+                <div>
+                    <h1>Add Comment</h1>
+                    <form class="form" method="POST" enctype="multipart/form-data"
+                          action="{%url 'projectcomment' PROJECT.project_obj.id %}">
+                        {% csrf_token %}
+                        {% for field in PROJECT.project_comment %}
+                        <div class="form__field">
+                            <label for="{{field.lable}}"></label>
+                            {{field}}
+                        </div>
+                        {% endfor %}
+                        <input class="btn btn--sub btn--lg  my-md" type="submit" value="Add Comment"/>
+                    </form>
+                </div>
+                <br>
+
+
+                <div class="commentList">
+                    {% for comment in PROJECT.project_comment_data %}
+                    <div class="comment">
+                        <a href="#">
+                            <img class="avatar avatar--md" src="{%  static comment.owner.profile_image.url  %}"
+                                 alt="user"/>
+                        </a>
+                        <div class="comment__details">
+                            <a href="#"
+                               class="comment__author">{{comment.owner}}</a>
+                            <p class="comment__info">{{comment.body|linebreaksbr}}</p>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</main>
+{% endblock content%}
+
+{% block scripts %}
+<script>
+
+let reportBtn = document.getElementById('report-btn')
+let reportContainer = document.getElementById('report_container')
+reportBtn.addEventListener('click', function(){ reportContainer.style.display = 'block' });
+
+</script>
+
+<script>
+    var slideIndex = 1;
+showSlides(slideIndex);
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides-slider");
+
+
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+
+  slides[slideIndex-1].style.display = "block";
+
+}
+
+</script>
+{% endblock scripts %}

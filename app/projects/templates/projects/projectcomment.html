@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <h1>Add Comment</h1>
+  <br>
+  <div class="form">
+      <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div>
+              <button> add comment</button>
+          </div>
+      </form>
+
+  </div>
+{% endblock %}
